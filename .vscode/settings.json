@@ -1,0 +1,6 @@
+{
+    "editor.formatOnPaste": true,
+    "diffEditor.codeLens": true,
+    "diffEditor.experimental.showMoves": true,
+    "editor.minimap.enabled": true
+}
