@@ -1,0 +1,729 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Real Estate Calculator</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css">
+    <style>
+        body {
+            padding: 10px;
+            background-color: #f5f5f5;
+            font-size: 14px;
+        }
+        .main-container {
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            padding: 20px;
+            margin-bottom: 15px;
+        }
+        .nav-tabs {
+            border-bottom: 1px solid #dee2e6;
+            margin-bottom: 20px;
+            gap: 10px;
+        }
+        .nav-tabs .nav-link {
+            border: none;
+            color: #6c757d;
+            padding: 10px 20px;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+        .nav-tabs .nav-link:hover {
+            border: none;
+            color: #0d6efd;
+        }
+        .nav-tabs .nav-link.active {
+            border: none;
+            color: #0d6efd;
+            position: relative;
+        }
+        .nav-tabs .nav-link.active::after {
+            content: '';
+            position: absolute;
+            bottom: -1px;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background-color: #0d6efd;
+        }
+        .form-group {
+            margin-bottom: 1rem;
+        }
+        .form-label {
+            font-weight: 500;
+            color: #495057;
+            margin-bottom: 0.5rem;
+        }
+        .form-control {
+            border: 1px solid #ced4da;
+            padding: 0.5rem 0.75rem;
+            font-size: 14px;
+        }
+        .help-text {
+            font-size: 12px;
+            color: #6c757d;
+            margin-top: 0.25rem;
+        }
+        .results-container {
+            margin-top: 20px;
+            padding: 20px;
+            background-color: #f8f9fa;
+            border-radius: 8px;
+        }
+        .result-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 15px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #dee2e6;
+        }
+        .result-row:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+        .result-label {
+            color: #6c757d;
+            font-size: 14px;
+        }
+        .result-value {
+            font-size: 14px;
+            color: #212529;
+        }
+        .result-detail {
+            font-size: 12px;
+            color: #6c757d;
+            margin-top: 2px;
+        }
+        .help-panel {
+            background-color: #f8f9fa;
+            border-left: 3px solid #0d6efd;
+            padding: 10px;
+            border-radius: 0 4px 4px 0;
+            font-size: 13px;
+        }
+        .help-panel ul {
+            padding-left: 20px;
+            margin-bottom: 0;
+        }
+        .help-text.text-primary {
+            margin-top: 5px;
+        }
+        .help-text.text-primary:hover {
+            color: #0a58ca !important;
+        }
+    </style>
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-12">
+                <div class="main-container">
+                    <h2 class="text-center mb-4">Real Estate Calculator</h2>
+
+                    <ul class="nav nav-tabs nav-fill" id="calculatorTabs" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active" id="basic-tab" data-bs-toggle="tab" data-bs-target="#basic" type="button" role="tab">
+                                Basic Calculator
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="investment-tab" data-bs-toggle="tab" data-bs-target="#investment" type="button" role="tab">
+                                Investment Analysis
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="compare-tab" data-bs-toggle="tab" data-bs-target="#compare" type="button" role="tab">
+                                Loan Comparison
+                            </button>
+                        </li>
+                    </ul>
+
+                    <div class="tab-content" id="calculatorTabContent">
+                        <div class="tab-pane fade show active" id="basic" role="tabpanel">
+                            <form id="basicForm">
+                                <div class="alert alert-info mb-4" role="alert">
+                                    <h6 class="mb-2">Understanding Your Mortgage</h6>
+                                    <small>
+                                        Your monthly payment consists of:
+                                        <ul class="mb-0">
+                                            <li>Principal & Interest (P&I) - pays down your loan</li>
+                                            <li>Escrow - covers property tax and insurance</li>
+                                            <li>PMI may be required if down payment is less than 20%</li>
+                                        </ul>
+                                    </small>
+                                </div>
+
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label class="form-label">Purchase Price ($)</label>
+                                            <input type="number" class="form-control" id="purchasePrice" value="300000">
+                                            <div class="help-text">Typical range: $100,000 - $1,000,000</div>
+                                            <div class="help-text text-primary" style="cursor: pointer" onclick="toggleHelp('priceHelp')">
+                                                <i class="bi bi-info-circle"></i> Need help determining price?
+                                            </div>
+                                            <div id="priceHelp" class="help-panel mt-2" style="display: none;">
+                                                Consider these factors:
+                                                <ul class="small">
+                                                    <li>Local market conditions</li>
+                                                    <li>Recent comparable sales</li>
+                                                    <li>Property condition and features</li>
+                                                    <li>Location and neighborhood</li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label class="form-label">Down Payment ($)</label>
+                                            <input type="number" class="form-control" id="downPayment" value="60000">
+                                            <div class="help-text" id="downPaymentPercent">20% of purchase price</div>
+                                            <div class="help-text text-primary" style="cursor: pointer" onclick="toggleHelp('downHelp')">
+                                                <i class="bi bi-info-circle"></i> About down payments
+                                            </div>
+                                            <div id="downHelp" class="help-panel mt-2" style="display: none;">
+                                                Common down payment options:
+                                                <ul class="small">
+                                                    <li>20% - Traditional, no PMI required</li>
+                                                    <li>3.5% - FHA minimum</li>
+                                                    <li>3% - Some conventional loans</li>
+                                                    <li>0% - VA or USDA if you qualify</li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label class="form-label">Interest Rate (%)</label>
+                                            <input type="number" class="form-control" id="interestRate" value="6.5" step="0.1">
+                                            <div class="help-text">Current market rates: 6.5% - 7.5%</div>
+                                            <div class="help-text text-primary" style="cursor: pointer" onclick="toggleHelp('rateHelp')">
+                                                <i class="bi bi-info-circle"></i> What affects your rate?
+                                            </div>
+                                            <div id="rateHelp" class="help-panel mt-2" style="display: none;">
+                                                Factors affecting your rate:
+                                                <ul class="small">
+                                                    <li>Credit score (higher score = lower rate)</li>
+                                                    <li>Down payment amount</li>
+                                                    <li>Loan term</li>
+                                                    <li>Loan type (Conventional, FHA, VA)</li>
+                                                    <li>Property type and use</li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label class="form-label">Loan Term (years)</label>
+                                            <input type="number" class="form-control" id="loanTerm" value="30">
+                                            <div class="help-text">Common terms: 15, 20, or 30 years</div>
+                                            <div class="help-text text-primary" style="cursor: pointer" onclick="toggleHelp('termHelp')">
+                                                <i class="bi bi-info-circle"></i> Choosing your term
+                                            </div>
+                                            <div id="termHelp" class="help-panel mt-2" style="display: none;">
+                                                Term comparison:
+                                                <ul class="small">
+                                                    <li>30 year - Lower monthly payments, more interest</li>
+                                                    <li>15 year - Higher payments, less total interest</li>
+                                                    <li>20 year - Balance between payment and interest</li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label class="form-label">Property Tax ($/year)</label>
+                                            <input type="number" class="form-control" id="propertyTax" value="3000">
+                                            <div class="help-text">Annual property tax amount</div>
+                                            <div class="help-text text-primary" style="cursor: pointer" onclick="toggleHelp('taxHelp')">
+                                                <i class="bi bi-info-circle"></i> About property taxes
+                                            </div>
+                                            <div id="taxHelp" class="help-panel mt-2" style="display: none;">
+                                                Property tax basics:
+                                                <ul class="small">
+                                                    <li>Based on assessed value</li>
+                                                    <li>Varies by location</li>
+                                                    <li>May change annually</li>
+                                                    <li>Usually paid through escrow</li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label class="form-label">Insurance ($/year)</label>
+                                            <input type="number" class="form-control" id="insurance" value="1200">
+                                            <div class="help-text">Annual homeowner's insurance</div>
+                                            <div class="help-text text-primary" style="cursor: pointer" onclick="toggleHelp('insuranceHelp')">
+                                                <i class="bi bi-info-circle"></i> Insurance coverage
+                                            </div>
+                                            <div id="insuranceHelp" class="help-panel mt-2" style="display: none;">
+                                                Insurance considerations:
+                                                <ul class="small">
+                                                    <li>Coverage for structure and belongings</li>
+                                                    <li>Liability protection</li>
+                                                    <li>Flood insurance may be required</li>
+                                                    <li>Usually paid through escrow</li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div id="basicResults" class="results-container" style="display: none;">
+                                    <!-- Results will be inserted here -->
+                                </div>
+                            </form>
+                        </div>
+                        <!-- Investment Analysis Tab -->
+                        <div class="tab-pane fade" id="investment" role="tabpanel">
+                            <form id="investmentForm">
+                                <div class="alert alert-info mb-4" role="alert">
+                                    <h6 class="mb-2">Investment Property Analysis</h6>
+                                    <small>
+                                        This calculator provides advanced metrics including:
+                                        <ul class="mb-0">
+                                            <li>Cash Flow Analysis & ROI Projections</li>
+                                            <li>BRRRR Method Calculations (Buy, Rehab, Rent, Refinance, Repeat)</li>
+                                            <li>Value-Add Opportunity Assessment</li>
+                                            <li>Risk-Adjusted Return Analysis</li>
+                                        </ul>
+                                    </small>
+                                </div>
+
+                                <!-- Property Information -->
+                                <h6 class="mb-3">Property Details</h6>
+                                <div class="row g-3 mb-4">
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label class="form-label">Purchase Price ($)</label>
+                                            <input type="number" class="form-control" id="invPurchasePrice" value="300000">
+                                            <div class="help-text">Current market value of property</div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label class="form-label">After Repair Value - ARV ($)</label>
+                                            <input type="number" class="form-control" id="arv" value="375000">
+                                            <div class="help-text">Estimated value after improvements</div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label class="form-label">Renovation Costs ($)</label>
+                                            <input type="number" class="form-control" id="rehabCost" value="50000">
+                                            <div class="help-text">Estimated repair and improvement costs</div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label class="form-label">Holding Period (years)</label>
+                                            <input type="number" class="form-control" id="holdingPeriod" value="5">
+                                            <div class="help-text">Planned investment timeline</div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Financing -->
+                                <h6 class="mb-3">Financing</h6>
+                                <div class="row g-3 mb-4">
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label class="form-label">Down Payment (%)</label>
+                                            <input type="number" class="form-control" id="invDownPayment" value="25">
+                                            <div class="help-text">Typically 25% for investment properties</div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label class="form-label">Interest Rate (%)</label>
+                                            <input type="number" class="form-control" id="invInterestRate" value="7.5" step="0.1">
+                                            <div class="help-text">Investment property rates are typically higher</div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label class="form-label">Loan Term (years)</label>
+                                            <input type="number" class="form-control" id="invLoanTerm" value="30">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label class="form-label">Points & Closing Costs (%)</label>
+                                            <input type="number" class="form-control" id="closingCosts" value="3" step="0.1">
+                                            <div class="help-text">Typically 2-5% of loan amount</div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Income -->
+                                <h6 class="mb-3">Rental Income</h6>
+                                <div class="row g-3 mb-4">
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label class="form-label">Monthly Rent ($)</label>
+                                            <input type="number" class="form-control" id="monthlyRent" value="2500">
+                                            <div class="help-text">Expected monthly rental income</div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label class="form-label">Other Monthly Income ($)</label>
+                                            <input type="number" class="form-control" id="otherIncome" value="0">
+                                            <div class="help-text">Parking, laundry, etc.</div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label class="form-label">Annual Rent Increase (%)</label>
+                                            <input type="number" class="form-control" id="rentIncrease" value="3" step="0.1">
+                                            <div class="help-text">Historical average: 3-5%</div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label class="form-label">Vacancy Rate (%)</label>
+                                            <input type="number" class="form-control" id="vacancyRate" value="5">
+                                            <div class="help-text">Typical range: 3-8%</div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Expenses -->
+                                <h6 class="mb-3">Operating Expenses</h6>
+                                <div class="row g-3 mb-4">
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label class="form-label">Property Tax ($/year)</label>
+                                            <input type="number" class="form-control" id="invPropertyTax" value="3000">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label class="form-label">Insurance ($/year)</label>
+                                            <input type="number" class="form-control" id="invInsurance" value="1500">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label class="form-label">Maintenance (%)</label>
+                                            <input type="number" class="form-control" id="maintenance" value="1" step="0.1">
+                                            <div class="help-text">% of property value annually</div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label class="form-label">Property Management (%)</label>
+                                            <input type="number" class="form-control" id="propertyMgmt" value="8">
+                                            <div class="help-text">% of rental income</div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label class="form-label">Utilities ($/month)</label>
+                                            <input type="number" class="form-control" id="utilities" value="0">
+                                            <div class="help-text">If not paid by tenant</div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label class="form-label">CapEx Reserve (%)</label>
+                                            <input type="number" class="form-control" id="capexReserve" value="5">
+                                            <div class="help-text">For major future repairs</div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Market Analysis -->
+                                <h6 class="mb-3">Market Factors</h6>
+                                <div class="row g-3 mb-4">
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label class="form-label">Property Appreciation (%)</label>
+                                            <input type="number" class="form-control" id="appreciation" value="3" step="0.1">
+                                            <div class="help-text">Annual appreciation rate</div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label class="form-label">Inflation Rate (%)</label>
+                                            <input type="number" class="form-control" id="inflation" value="2.5" step="0.1">
+                                            <div class="help-text">For expense projections</div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div id="investmentResults" class="results-container" style="display: none;">
+                                    <!-- Results will be inserted here -->
+                                </div>
+                            </form>
+                        </div>
+                        <!-- Comparison Tab -->
+                        <div class="tab-pane fade" id="compare" role="tabpanel">
+                            <div class="alert alert-info mb-4" role="alert">
+                                <h6 class="mb-2">Deal Negotiation Assistant</h6>
+                                <small>
+                                    Enter the buyer's and seller's terms to get AI-powered suggestions for reaching an agreement.
+                                    The tool will analyze various aspects of the deal and propose creative solutions.
+                                </small>
+                            </div>
+
+                            <div class="row g-4">
+                                <!-- Buyer's Terms -->
+                                <div class="col-md-6">
+                                    <div class="card h-100">
+                                        <div class="card-header bg-primary text-white">
+                                            <h5 class="card-title mb-0">Buyer's Terms</h5>
+                                        </div>
+                                        <div class="card-body">
+                                            <form id="buyerForm">
+                                                <div class="mb-3">
+                                                    <label class="form-label">Offered Price ($)</label>
+                                                    <input type="number" class="form-control" id="buyerPrice" required>
+                                                </div>
+                                                <div class="mb-3">
+                                                    <label class="form-label">Down Payment (%)</label>
+                                                    <input type="number" class="form-control" id="buyerDownPayment" required>
+                                                </div>
+                                                <div class="mb-3">
+                                                    <label class="form-label">Desired Closing Date</label>
+                                                    <input type="date" class="form-control" id="buyerClosingDate" required>
+                                                </div>
+                                                <div class="mb-3">
+                                                    <label class="form-label">Contingencies</label>
+                                                    <div class="form-check">
+                                                        <input class="form-check-input" type="checkbox" id="buyerInspection">
+                                                        <label class="form-check-label">Inspection</label>
+                                                    </div>
+                                                    <div class="form-check">
+                                                        <input class="form-check-input" type="checkbox" id="buyerFinancing">
+                                                        <label class="form-check-label">Financing</label>
+                                                    </div>
+                                                    <div class="form-check">
+                                                        <input class="form-check-input" type="checkbox" id="buyerAppraisal">
+                                                        <label class="form-check-label">Appraisal</label>
+                                                    </div>
+                                                    <div class="form-check">
+                                                        <input class="form-check-input" type="checkbox" id="buyerSale">
+                                                        <label class="form-check-label">Home Sale</label>
+                                                    </div>
+                                                </div>
+                                                <div class="mb-3">
+                                                    <label class="form-label">Included Items</label>
+                                                    <textarea class="form-control" id="buyerItems" rows="2" 
+                                                              placeholder="List items you want included (appliances, fixtures, etc.)"></textarea>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Seller's Terms -->
+                                <div class="col-md-6">
+                                    <div class="card h-100">
+                                        <div class="card-header bg-success text-white">
+                                            <h5 class="card-title mb-0">Seller's Terms</h5>
+                                        </div>
+                                        <div class="card-body">
+                                            <form id="sellerForm">
+                                                <div class="mb-3">
+                                                    <label class="form-label">Asking Price ($)</label>
+                                                    <input type="number" class="form-control" id="sellerPrice" required>
+                                                </div>
+                                                <div class="mb-3">
+                                                    <label class="form-label">Minimum Down Payment (%)</label>
+                                                    <input type="number" class="form-control" id="sellerDownPayment" required>
+                                                </div>
+                                                <div class="mb-3">
+                                                    <label class="form-label">Preferred Closing Date</label>
+                                                    <input type="date" class="form-control" id="sellerClosingDate" required>
+                                                </div>
+                                                <div class="mb-3">
+                                                    <label class="form-label">Acceptable Contingencies</label>
+                                                    <div class="form-check">
+                                                        <input class="form-check-input" type="checkbox" id="sellerInspection">
+                                                        <label class="form-check-label">Inspection</label>
+                                                    </div>
+                                                    <div class="form-check">
+                                                        <input class="form-check-input" type="checkbox" id="sellerFinancing">
+                                                        <label class="form-check-label">Financing</label>
+                                                    </div>
+                                                    <div class="form-check">
+                                                        <input class="form-check-input" type="checkbox" id="sellerAppraisal">
+                                                        <label class="form-check-label">Appraisal</label>
+                                                    </div>
+                                                    <div class="form-check">
+                                                        <input class="form-check-input" type="checkbox" id="sellerSale">
+                                                        <label class="form-check-label">Home Sale</label>
+                                                    </div>
+                                                </div>
+                                                <div class="mb-3">
+                                                    <label class="form-label">Included Items</label>
+                                                    <textarea class="form-control" id="sellerItems" rows="2" 
+                                                              placeholder="List items you're willing to include"></textarea>
+                                                </div>
+                                                <div class="mb-3">
+                                                    <div class="form-check">
+                                                        <input class="form-check-input" type="checkbox" id="sellerNeedsTime">
+                                                        <label class="form-check-label">Need extra time after closing</label>
+                                                    </div>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Analysis Button -->
+                            <div class="text-center mt-4">
+                                <button type="button" class="btn btn-primary btn-lg" onclick="analyzeNegotiation()">
+                                    Analyze Deal & Get Suggestions
+                                </button>
+                            </div>
+
+                            <!-- Results Section -->
+                            <div id="negotiationResults" class="mt-4" style="display: none;">
+                                <div class="card">
+                                    <div class="card-header bg-light">
+                                        <h5 class="mb-0">Negotiation Analysis Results</h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <!-- Price Analysis -->
+                                        <div class="mb-4">
+                                            <h6 class="text-primary">Price Analysis</h6>
+                                            <div id="priceAnalysis"></div>
+                                        </div>
+
+                                        <!-- Common Ground -->
+                                        <div class="mb-4">
+                                            <h6 class="text-success">Points of Agreement</h6>
+                                            <div id="commonGround"></div>
+                                        </div>
+
+                                        <!-- Key Differences -->
+                                        <div class="mb-4">
+                                            <h6 class="text-warning">Key Differences</h6>
+                                            <div id="gapAnalysis"></div>
+                                        </div>
+
+                                        <!-- Suggested Solutions -->
+                                        <div class="mb-4">
+                                            <h6 class="text-primary">Suggested Solutions</h6>
+                                            <div id="suggestions" class="accordion"></div>
+                                        </div>
+
+                                        <!-- Summary -->
+                                        <div class="mt-4 p-3 bg-light rounded">
+                                            <h6 class="text-dark">Summary</h6>
+                                            <div id="negotiationSummary"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notes Section -->
+    <div class="container-fluid mt-3">
+        <div class="row">
+            <div class="col-12">
+                <div class="main-container">
+                    <h5 class="mb-3">Notes & Research</h5>
+                    <div class="row g-3">
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label class="form-label">Property Details</label>
+                                <textarea class="form-control" id="propertyNotes" rows="4" 
+                                    placeholder="Enter property features, condition, improvements needed..."></textarea>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label class="form-label">Market Research</label>
+                                <textarea class="form-control" id="marketNotes" rows="4" 
+                                    placeholder="Note comparable sales, market trends, neighborhood details..."></textarea>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label class="form-label">Additional Costs</label>
+                                <textarea class="form-control" id="costNotes" rows="4" 
+                                    placeholder="Note closing costs, repairs, furniture, moving expenses..."></textarea>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Custom JS -->
+    <script>
+        // Debug flag
+        const DEBUG = true;
+        
+        // Logging function
+        function log(message, data = null) {
+            if (DEBUG) {
+                console.log(message);
+                if (data) console.log(data);
+            }
+        }
+
+        // Initialize when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            log('Page loaded, initializing...');
+            
+            // Load test data
+            document.getElementById('buyerPrice').value = '450000';
+            document.getElementById('buyerDownPayment').value = '20';
+            document.getElementById('buyerClosingDate').value = '2024-04-15';
+            document.getElementById('buyerInspection').checked = true;
+            document.getElementById('buyerFinancing').checked = true;
+            document.getElementById('buyerItems').value = 'Refrigerator, Washer, Dryer';
+
+            document.getElementById('sellerPrice').value = '475000';
+            document.getElementById('sellerDownPayment').value = '25';
+            document.getElementById('sellerClosingDate').value = '2024-05-01';
+            document.getElementById('sellerInspection').checked = true;
+            document.getElementById('sellerItems').value = 'Refrigerator';
+            document.getElementById('sellerNeedsTime').checked = true;
+
+            log('Test data loaded');
+        });
+
+        // Format currency
+        function formatCurrency(amount) {
+            return new Intl.NumberFormat('en-US', {
+                style: 'currency',
+                currency: 'USD',
+                minimumFractionDigits: 0,
+                maximumFractionDigits: 0
+            }).format(amount);
+        }
+
+        // Format date
+        function formatDate(dateString) {
+            return new Date(dateString).toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
+        }
+    </script>
+    <script src="{{ url_for('static', filename='js/negotiation.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/comparison.js') }}"></script>
+</body>
+</html>

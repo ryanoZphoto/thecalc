@@ -7,7 +7,7 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
         .calculator-container {
-            max-width: 800px;
+            max-width: 1200px;
             margin: 2rem auto;
             padding: 2rem;
             box-shadow: 0 0 20px rgba(0,0,0,0.1);
@@ -22,66 +22,258 @@
         .nav-tabs {
             margin-bottom: 1rem;
         }
+        .reference-panel {
+            background-color: #fff;
+            padding: 1rem;
+            border: 1px solid #dee2e6;
+            border-radius: 5px;
+            margin-top: 2rem;
+        }
+        .reference-section {
+            margin-bottom: 1rem;
+        }
+        .reference-section textarea {
+            width: 100%;
+            min-height: 100px;
+            margin-top: 0.5rem;
+        }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="calculator-container">
-            <h2 class="text-center mb-4">Real Estate Calculator</h2>
-            
-            <ul class="nav nav-tabs" id="calculatorTabs" role="tablist">
-                <li class="nav-item">
-                    <a class="nav-link active" id="seller-tab" data-bs-toggle="tab" href="#seller" role="tab">
-                        Seller Financing
-                    </a>
-                </li>
-                <!-- Add more tabs as needed -->
-            </ul>
-            
-            <div class="tab-content" id="calculatorTabContent">
-                <div class="tab-pane fade show active" id="seller" role="tabpanel">
-                    <form id="sellerFinancingForm" class="mt-3">
-                        <div class="mb-3">
-                            <label for="salePrice" class="form-label">Sale Price ($)</label>
-                            <input type="number" class="form-control" id="salePrice" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="downPayment" class="form-label">Down Payment ($)</label>
-                            <input type="number" class="form-control" id="downPayment" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="interestRate" class="form-label">Interest Rate (%)</label>
-                            <input type="number" class="form-control" id="interestRate" step="0.1" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="loanTerm" class="form-label">Loan Term (Years)</label>
-                            <input type="number" class="form-control" id="loanTerm" value="30" required>
-                        </div>
-                        <button type="submit" class="btn btn-primary">Calculate</button>
-                        <button type="button" class="btn btn-secondary" onclick="saveScenario()">Save Scenario</button>
-                    </form>
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Calculator Section -->
+            <div class="col-md-8">
+                <div class="calculator-container">
+                    <h2 class="text-center mb-4">Real Estate Calculator</h2>
                     
-                    <div id="results" class="result-box mt-4" style="display: none;">
-                        <h4>Results</h4>
-                        <div class="row">
-                            <div class="col-md-6">
-                                <p>Monthly Payment: <span id="monthlyPayment"></span></p>
-                                <p>Loan Amount: <span id="loanAmount"></span></p>
+                    <ul class="nav nav-tabs" id="calculatorTabs" role="tablist">
+                        <li class="nav-item">
+                            <a class="nav-link active" id="seller-tab" data-bs-toggle="tab" href="#seller" role="tab">
+                                Seller Financing
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" id="investment-tab" data-bs-toggle="tab" href="#investment" role="tab">
+                                Investment Analysis
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" id="comparison-tab" data-bs-toggle="tab" href="#comparison" role="tab">
+                                Loan Comparison
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" id="closing-tab" data-bs-toggle="tab" href="#closing" role="tab">
+                                Closing Costs
+                            </a>
+                        </li>
+                    </ul>
+                    
+                    <div class="tab-content" id="calculatorTabContent">
+                        <!-- Seller Financing Tab -->
+                        <div class="tab-pane fade show active" id="seller" role="tabpanel">
+                            <form id="sellerFinancingForm" class="mt-3">
+                                <div class="mb-3">
+                                    <label for="salePrice" class="form-label">Sale Price ($)</label>
+                                    <input type="number" class="form-control" id="salePrice" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="downPayment" class="form-label">Down Payment ($)</label>
+                                    <input type="number" class="form-control" id="downPayment" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="interestRate" class="form-label">Interest Rate (%)</label>
+                                    <input type="number" class="form-control" id="interestRate" step="0.1" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="loanTerm" class="form-label">Loan Term (Years)</label>
+                                    <input type="number" class="form-control" id="loanTerm" value="30" required>
+                                </div>
+                                <button type="submit" class="btn btn-primary">Calculate</button>
+                                <button type="button" class="btn btn-secondary" onclick="saveScenario()">Save Scenario</button>
+                            </form>
+                            
+                            <div id="results" class="result-box mt-4" style="display: none;">
+                                <h4>Results</h4>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <p>Monthly Payment: <span id="monthlyPayment"></span></p>
+                                        <p>Loan Amount: <span id="loanAmount"></span></p>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <p>Total Payments: <span id="totalPayments"></span></p>
+                                        <p>Total Interest: <span id="totalInterest"></span></p>
+                                    </div>
+                                </div>
                             </div>
-                            <div class="col-md-6">
-                                <p>Total Payments: <span id="totalPayments"></span></p>
-                                <p>Total Interest: <span id="totalInterest"></span></p>
+                        </div>
+
+                        <!-- Investment Analysis Tab -->
+                        <div class="tab-pane fade" id="investment" role="tabpanel">
+                            <form id="investmentForm" class="mt-3">
+                                <div class="mb-3">
+                                    <label for="purchasePrice" class="form-label">Purchase Price ($)</label>
+                                    <input type="number" class="form-control" id="purchasePrice" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="monthlyRent" class="form-label">Monthly Rent ($)</label>
+                                    <input type="number" class="form-control" id="monthlyRent" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="expenses" class="form-label">Monthly Expenses ($)</label>
+                                    <input type="number" class="form-control" id="expenses" required>
+                                </div>
+                                <button type="submit" class="btn btn-primary">Analyze Investment</button>
+                            </form>
+                            
+                            <div id="investmentResults" class="result-box mt-4" style="display: none;">
+                                <h4>Investment Analysis</h4>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <p>Cash Flow: <span id="cashFlow"></span></p>
+                                        <p>Cap Rate: <span id="capRate"></span></p>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <p>ROI: <span id="roi"></span></p>
+                                        <p>Break Even: <span id="breakEven"></span></p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Loan Comparison Tab -->
+                        <div class="tab-pane fade" id="comparison" role="tabpanel">
+                            <div class="row mt-3">
+                                <div class="col-md-6">
+                                    <h5>Loan 1</h5>
+                                    <form id="loan1Form">
+                                        <div class="mb-3">
+                                            <label class="form-label">Amount ($)</label>
+                                            <input type="number" class="form-control" id="loan1Amount" required>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="form-label">Rate (%)</label>
+                                            <input type="number" class="form-control" id="loan1Rate" step="0.1" required>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="form-label">Term (Years)</label>
+                                            <input type="number" class="form-control" id="loan1Term" required>
+                                        </div>
+                                    </form>
+                                </div>
+                                <div class="col-md-6">
+                                    <h5>Loan 2</h5>
+                                    <form id="loan2Form">
+                                        <div class="mb-3">
+                                            <label class="form-label">Amount ($)</label>
+                                            <input type="number" class="form-control" id="loan2Amount" required>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="form-label">Rate (%)</label>
+                                            <input type="number" class="form-control" id="loan2Rate" step="0.1" required>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="form-label">Term (Years)</label>
+                                            <input type="number" class="form-control" id="loan2Term" required>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                            <button type="button" class="btn btn-primary mt-3" onclick="compareLoan()">Compare Loans</button>
+                            
+                            <div id="comparisonResults" class="result-box mt-4" style="display: none;">
+                                <h4>Loan Comparison</h4>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <h5>Loan 1</h5>
+                                        <p>Monthly Payment: <span id="loan1Payment"></span></p>
+                                        <p>Total Interest: <span id="loan1Interest"></span></p>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <h5>Loan 2</h5>
+                                        <p>Monthly Payment: <span id="loan2Payment"></span></p>
+                                        <p>Total Interest: <span id="loan2Interest"></span></p>
+                                    </div>
+                                </div>
+                                <div class="mt-3">
+                                    <h5>Difference</h5>
+                                    <p>Monthly Payment Difference: <span id="paymentDiff"></span></p>
+                                    <p>Total Interest Difference: <span id="interestDiff"></span></p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Closing Costs Tab -->
+                        <div class="tab-pane fade" id="closing" role="tabpanel">
+                            <form id="closingForm" class="mt-3">
+                                <div class="mb-3">
+                                    <label for="propertyPrice" class="form-label">Property Price ($)</label>
+                                    <input type="number" class="form-control" id="propertyPrice" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="downPaymentPercent" class="form-label">Down Payment (%)</label>
+                                    <input type="number" class="form-control" id="downPaymentPercent" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="lenderFees" class="form-label">Lender Fees ($)</label>
+                                    <input type="number" class="form-control" id="lenderFees" required>
+                                </div>
+                                <button type="submit" class="btn btn-primary">Calculate Closing Costs</button>
+                            </form>
+                            
+                            <div id="closingResults" class="result-box mt-4" style="display: none;">
+                                <h4>Closing Costs Breakdown</h4>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <p>Down Payment: <span id="closingDownPayment"></span></p>
+                                        <p>Lender Fees: <span id="closingLenderFees"></span></p>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <p>Title Insurance: <span id="titleInsurance"></span></p>
+                                        <p>Total Closing Costs: <span id="totalClosingCosts"></span></p>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-            
-            <!-- Scenarios Section -->
-            <div class="mt-4">
-                <h4>Saved Scenarios</h4>
-                <div id="scenariosList" class="list-group">
-                    <!-- Scenarios will be loaded here -->
+
+            <!-- Reference Panel -->
+            <div class="col-md-4">
+                <div class="reference-panel">
+                    <h3>Reference Information</h3>
+                    
+                    <div class="reference-section">
+                        <h5>Property Tax Rates</h5>
+                        <textarea id="taxNotes" class="form-control" placeholder="Enter property tax information..."></textarea>
+                    </div>
+                    
+                    <div class="reference-section">
+                        <h5>Insurance Rates</h5>
+                        <textarea id="insuranceNotes" class="form-control" placeholder="Enter insurance rate information..."></textarea>
+                    </div>
+                    
+                    <div class="reference-section">
+                        <h5>Market Rates</h5>
+                        <textarea id="marketNotes" class="form-control" placeholder="Enter current market rates..."></textarea>
+                    </div>
+                    
+                    <div class="reference-section">
+                        <h5>Local Fees & Costs</h5>
+                        <textarea id="feesNotes" class="form-control" placeholder="Enter local fees and costs..."></textarea>
+                    </div>
+                    
+                    <div class="reference-section">
+                        <h5>Additional Notes</h5>
+                        <textarea id="customNotes" class="form-control" placeholder="Enter any additional notes..."></textarea>
+                    </div>
+                    
+                    <div class="mt-3">
+                        <button class="btn btn-primary" onclick="saveNotes()">Save Notes</button>
+                        <button class="btn btn-secondary" onclick="loadNotes()">Load Notes</button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -89,9 +281,22 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
+        // Existing calculator functions
         document.getElementById('sellerFinancingForm').addEventListener('submit', function(e) {
             e.preventDefault();
             calculateSellerFinancing();
+        });
+
+        // Investment Analysis
+        document.getElementById('investmentForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            calculateInvestment();
+        });
+
+        // Closing Costs
+        document.getElementById('closingForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            calculateClosingCosts();
         });
 
         function calculateSellerFinancing() {
@@ -124,69 +329,96 @@
             });
         }
 
-        function saveScenario() {
-            const name = prompt('Enter a name for this scenario:');
-            if (!name) return;
+        function calculateInvestment() {
+            const purchasePrice = parseFloat(document.getElementById('purchasePrice').value);
+            const monthlyRent = parseFloat(document.getElementById('monthlyRent').value);
+            const expenses = parseFloat(document.getElementById('expenses').value);
 
-            const data = {
-                name: name,
-                data: {
-                    sale_price: document.getElementById('salePrice').value,
-                    down_payment: document.getElementById('downPayment').value,
-                    rate: document.getElementById('interestRate').value,
-                    years: document.getElementById('loanTerm').value
-                }
+            const annualRent = monthlyRent * 12;
+            const annualExpenses = expenses * 12;
+            const netIncome = annualRent - annualExpenses;
+            const cashFlow = monthlyRent - expenses;
+            const capRate = (netIncome / purchasePrice) * 100;
+            const roi = (netIncome / purchasePrice) * 100;
+            const breakEven = purchasePrice / (monthlyRent - expenses);
+
+            document.getElementById('investmentResults').style.display = 'block';
+            document.getElementById('cashFlow').textContent = formatCurrency(cashFlow) + '/month';
+            document.getElementById('capRate').textContent = capRate.toFixed(2) + '%';
+            document.getElementById('roi').textContent = roi.toFixed(2) + '%';
+            document.getElementById('breakEven').textContent = Math.ceil(breakEven) + ' months';
+        }
+
+        function compareLoan() {
+            const loan1 = {
+                amount: parseFloat(document.getElementById('loan1Amount').value),
+                rate: parseFloat(document.getElementById('loan1Rate').value) / 100,
+                term: parseFloat(document.getElementById('loan1Term').value)
             };
 
-            fetch('/save_scenario', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(data)
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    alert('Scenario saved successfully!');
-                    loadScenarios();
-                } else {
-                    alert('Error saving scenario: ' + data.error);
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                alert('Error saving scenario');
-            });
+            const loan2 = {
+                amount: parseFloat(document.getElementById('loan2Amount').value),
+                rate: parseFloat(document.getElementById('loan2Rate').value) / 100,
+                term: parseFloat(document.getElementById('loan2Term').value)
+            };
+
+            const calculateLoan = (loan) => {
+                const monthlyRate = loan.rate / 12;
+                const numPayments = loan.term * 12;
+                const monthlyPayment = loan.amount * monthlyRate * Math.pow(1 + monthlyRate, numPayments) / (Math.pow(1 + monthlyRate, numPayments) - 1);
+                const totalPayments = monthlyPayment * numPayments;
+                const totalInterest = totalPayments - loan.amount;
+                return { monthlyPayment, totalInterest };
+            };
+
+            const loan1Results = calculateLoan(loan1);
+            const loan2Results = calculateLoan(loan2);
+
+            document.getElementById('comparisonResults').style.display = 'block';
+            document.getElementById('loan1Payment').textContent = formatCurrency(loan1Results.monthlyPayment);
+            document.getElementById('loan1Interest').textContent = formatCurrency(loan1Results.totalInterest);
+            document.getElementById('loan2Payment').textContent = formatCurrency(loan2Results.monthlyPayment);
+            document.getElementById('loan2Interest').textContent = formatCurrency(loan2Results.totalInterest);
+            document.getElementById('paymentDiff').textContent = formatCurrency(Math.abs(loan1Results.monthlyPayment - loan2Results.monthlyPayment));
+            document.getElementById('interestDiff').textContent = formatCurrency(Math.abs(loan1Results.totalInterest - loan2Results.totalInterest));
         }
 
-        function loadScenarios() {
-            fetch('/scenarios')
-                .then(response => response.json())
-                .then(scenarios => {
-                    const scenariosList = document.getElementById('scenariosList');
-                    scenariosList.innerHTML = '';
-                    
-                    Object.entries(scenarios).forEach(([id, scenario]) => {
-                        const item = document.createElement('a');
-                        item.href = '#';
-                        item.className = 'list-group-item list-group-item-action';
-                        item.textContent = `${scenario.name} (${new Date(scenario.created_at).toLocaleDateString()})`;
-                        item.onclick = () => loadScenario(scenario.data);
-                        scenariosList.appendChild(item);
-                    });
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                });
+        function calculateClosingCosts() {
+            const propertyPrice = parseFloat(document.getElementById('propertyPrice').value);
+            const downPaymentPercent = parseFloat(document.getElementById('downPaymentPercent').value);
+            const lenderFees = parseFloat(document.getElementById('lenderFees').value);
+
+            const downPayment = propertyPrice * (downPaymentPercent / 100);
+            const titleInsurance = propertyPrice * 0.005; // 0.5% of property price
+            const totalClosing = downPayment + lenderFees + titleInsurance;
+
+            document.getElementById('closingResults').style.display = 'block';
+            document.getElementById('closingDownPayment').textContent = formatCurrency(downPayment);
+            document.getElementById('closingLenderFees').textContent = formatCurrency(lenderFees);
+            document.getElementById('titleInsurance').textContent = formatCurrency(titleInsurance);
+            document.getElementById('totalClosingCosts').textContent = formatCurrency(totalClosing);
         }
 
-        function loadScenario(data) {
-            document.getElementById('salePrice').value = data.sale_price;
-            document.getElementById('downPayment').value = data.down_payment;
-            document.getElementById('interestRate').value = data.rate;
-            document.getElementById('loanTerm').value = data.years;
-            calculateSellerFinancing();
+        function saveNotes() {
+            const notes = {
+                tax: document.getElementById('taxNotes').value,
+                insurance: document.getElementById('insuranceNotes').value,
+                market: document.getElementById('marketNotes').value,
+                fees: document.getElementById('feesNotes').value,
+                custom: document.getElementById('customNotes').value
+            };
+
+            localStorage.setItem('calculatorNotes', JSON.stringify(notes));
+            alert('Notes saved successfully!');
+        }
+
+        function loadNotes() {
+            const notes = JSON.parse(localStorage.getItem('calculatorNotes') || '{}');
+            document.getElementById('taxNotes').value = notes.tax || '';
+            document.getElementById('insuranceNotes').value = notes.insurance || '';
+            document.getElementById('marketNotes').value = notes.market || '';
+            document.getElementById('feesNotes').value = notes.fees || '';
+            document.getElementById('customNotes').value = notes.custom || '';
         }
 
         function formatCurrency(value) {
@@ -196,8 +428,8 @@
             }).format(value);
         }
 
-        // Load scenarios when page loads
-        loadScenarios();
+        // Load notes when page loads
+        loadNotes();
     </script>
 </body>
-</html> 
+</html>

@@ -1,0 +1,7 @@
+# Create new project structure
+mkdir -p calculator/src/calculator/{core,web/static/js,web/templates}
+mkdir -p calculator/tests
+cd calculator
+
+# Initialize Poetry
+poetry init 

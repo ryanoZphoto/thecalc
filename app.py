@@ -2,7 +2,6 @@ from flask import Flask, render_template, request, jsonify
 import json
 from datetime import datetime
 
-app = Flask(__name__)
 
 class Calculator:
     @staticmethod
@@ -13,9 +12,42 @@ class Calculator:
             return principal / num_payments
         return (principal * monthly_rate * (1 + monthly_rate)**num_payments) / ((1 + monthly_rate)**num_payments - 1)
 
+    @staticmethod
+    def calculate_investment(purchase_price, monthly_rent, monthly_expenses):
+        annual_rent = monthly_rent * 12
+        annual_expenses = monthly_expenses * 12
+        net_income = annual_rent - annual_expenses
+        cash_flow = monthly_rent - monthly_expenses
+        cap_rate = (net_income / purchase_price) * 100
+        roi = (net_income / purchase_price) * 100
+        break_even = purchase_price / (monthly_rent - monthly_expenses)
+        return {
+            'cash_flow': cash_flow,
+            'cap_rate': cap_rate,
+            'roi': roi,
+            'break_even': break_even
+        }
+
+    @staticmethod
+    def calculate_closing_costs(property_price, down_payment_percent, lender_fees):
+        down_payment = property_price * (down_payment_percent / 100)
+        title_insurance = property_price * 0.005  # 0.5% of property price
+        total_closing = down_payment + lender_fees + title_insurance
+        return {
+            'down_payment': down_payment,
+            'lender_fees': lender_fees,
+            'title_insurance': title_insurance,
+            'total_closing': total_closing
+        }
+
+
+app = Flask(__name__)
+
+
 @app.route('/')
 def home():
     return render_template('index.html')
+
 
 @app.route('/calculate', methods=['POST'])
 def calculate():
@@ -40,42 +72,36 @@ def calculate():
             'loan_amount': round(loan_amount, 2)
         })
     
+    elif calc_type == 'investment':
+        purchase_price = float(data.get('purchase_price', 0))
+        monthly_rent = float(data.get('monthly_rent', 0))
+        monthly_expenses = float(data.get('monthly_expenses', 0))
+        
+        results = Calculator.calculate_investment(
+            purchase_price, monthly_rent, monthly_expenses)
+        return jsonify({
+            'cash_flow': round(results['cash_flow'], 2),
+            'cap_rate': round(results['cap_rate'], 2),
+            'roi': round(results['roi'], 2),
+            'break_even': round(results['break_even'], 0)
+        })
+    
+    elif calc_type == 'closing_costs':
+        property_price = float(data.get('property_price', 0))
+        down_payment_percent = float(data.get('down_payment_percent', 0))
+        lender_fees = float(data.get('lender_fees', 0))
+        
+        results = Calculator.calculate_closing_costs(
+            property_price, down_payment_percent, lender_fees)
+        return jsonify({
+            'down_payment': round(results['down_payment'], 2),
+            'lender_fees': round(results['lender_fees'], 2),
+            'title_insurance': round(results['title_insurance'], 2),
+            'total_closing': round(results['total_closing'], 2)
+        })
+    
     return jsonify({'error': 'Invalid calculation type'})
 
-@app.route('/save_scenario', methods=['POST'])
-def save_scenario():
-    data = request.json
-    try:
-        scenarios = load_scenarios()
-        scenario_id = str(len(scenarios) + 1)
-        scenarios[scenario_id] = {
-            'name': data.get('name'),
-            'data': data.get('data'),
-            'created_at': datetime.now().isoformat()
-        }
-        save_scenarios(scenarios)
-        return jsonify({'success': True, 'id': scenario_id})
-    except Exception as e:
-        return jsonify({'error': str(e)})
-
-@app.route('/scenarios', methods=['GET'])
-def get_scenarios():
-    try:
-        scenarios = load_scenarios()
-        return jsonify(scenarios)
-    except Exception as e:
-        return jsonify({'error': str(e)})
-
-def load_scenarios():
-    try:
-        with open('scenarios.json', 'r') as f:
-            return json.load(f)
-    except FileNotFoundError:
-        return {}
-
-def save_scenarios(scenarios):
-    with open('scenarios.json', 'w') as f:
-        json.dump(scenarios, f, indent=2)
 
 if __name__ == '__main__':
-    app.run(debug=True) 
+    app.run(debug=True)

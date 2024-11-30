@@ -1,0 +1,618 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Real Estate Calculator Suite</title>
+    
+    <!-- Add Inter font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Link our CSS file -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    
+    <!-- Charts.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="tabs">
+        <div class="tab-buttons">
+            <button class="tab-button active" data-tab="seller-finance">Seller Finance</button>
+            <button class="tab-button" data-tab="deal-analyzer">Deal Analyzer</button>
+            <button class="tab-button" data-tab="rental-analysis">Rental Analysis</button>
+            <button class="tab-button" data-tab="flip-calculator">Fix & Flip</button>
+            <button class="tab-button" data-tab="wholesale">Wholesale Calculator</button>
+            <button class="tab-button" data-tab="marketing">Marketing ROI</button>
+        </div>
+
+        <div id="seller-finance" class="tab-content active">
+            <h2>Seller Finance Calculator</h2>
+            <div class="calculator-info">
+                <div class="info-header">
+                    <h3>About Seller Financing</h3>
+                    <button class="toggle-info" title="Show/Hide Help">ⓘ</button>
+                </div>
+                <div class="info-content">
+                    <div class="info-section">
+                        <h4>What is Seller Financing?</h4>
+                        <p>Seller financing is when the property owner acts as the bank, allowing the buyer to make payments directly to them instead of a traditional lender.</p>
+                    </div>
+                    <div class="info-section">
+                        <h4>When to Use This Calculator</h4>
+                        <ul>
+                            <li>When traditional financing isn't available or desirable</li>
+                            <li>To analyze monthly income potential for sellers</li>
+                            <li>To structure creative financing deals</li>
+                            <li>To compare different financing scenarios</li>
+                        </ul>
+                    </div>
+                    <div class="info-section">
+                        <h4>Key Features</h4>
+                        <ul>
+                            <li>Comprehensive buyer analysis</li>
+                            <li>Risk assessment tools</li>
+                            <li>Document generation</li>
+                            <li>Tax implications analysis</li>
+                        </ul>
+                    </div>
+                    <div class="info-section">
+                        <h4>How to Use</h4>
+                        <ol>
+                            <li>Enter property details and desired terms</li>
+                            <li>Input buyer qualification information</li>
+                            <li>Select security requirements</li>
+                            <li>Click "Analyze Financing" for results</li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+            <div class="seller-finance-calculator">
+                <div class="input-group">
+                    <div class="input-section">
+                        <h3>Property Details</h3>
+                        <input type="number" id="property-price" placeholder="Purchase Price">
+                        <input type="number" id="down-payment" placeholder="Down Payment">
+                        <input type="number" id="interest-rate" placeholder="Interest Rate %" step="0.1">
+                        <input type="number" id="loan-term" placeholder="Loan Term (years)">
+                        <input type="number" id="balloon-years" placeholder="Balloon Payment (years)">
+                    </div>
+                    <div class="input-section">
+                        <h3>Additional Costs</h3>
+                        <input type="number" id="property-tax" placeholder="Annual Property Tax">
+                        <input type="number" id="insurance" placeholder="Annual Insurance">
+                        <input type="number" id="maintenance" placeholder="Monthly Maintenance">
+                        <select id="payment-frequency">
+                            <option value="monthly">Monthly Payments</option>
+                            <option value="quarterly">Quarterly Payments</option>
+                            <option value="annually">Annual Payments</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <div class="input-section">
+                        <h3>Buyer Analysis</h3>
+                        <input type="number" id="buyer-income" placeholder="Monthly Income">
+                        <input type="number" id="buyer-debt" placeholder="Monthly Debts">
+                        <select id="credit-range">
+                            <option value="">Select Credit Range</option>
+                            <option value="excellent">Excellent (720+)</option>
+                            <option value="good">Good (680-719)</option>
+                            <option value="fair">Fair (620-679)</option>
+                            <option value="poor">Poor (Below 620)</option>
+                        </select>
+                        <input type="number" id="assets" placeholder="Liquid Assets">
+                        <select id="employment-type">
+                            <option value="">Employment Type</option>
+                            <option value="w2">W2 Employee</option>
+                            <option value="1099">1099 Contractor</option>
+                            <option value="business">Business Owner</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="security-section">
+                    <h3>Security & Terms</h3>
+                    <div class="checkbox-group">
+                        <label><input type="checkbox" id="first-position"> First Position Lien</label>
+                        <label><input type="checkbox" id="personal-guarantee"> Personal Guarantee</label>
+                        <label><input type="checkbox" id="cross-collateral"> Cross Collateralization</label>
+                        <label><input type="checkbox" id="life-insurance"> Life Insurance Required</label>
+                    </div>
+                </div>
+
+                <button id="calculate-finance" class="calculate-btn">Analyze Financing</button>
+
+                <div class="results-container">
+                    <div class="comparison-section">
+                        <h3>Sale Options Comparison</h3>
+                        <div class="comparison-grid">
+                            <div class="sale-option">
+                                <h4>Traditional Sale</h4>
+                                <div class="metric">
+                                    <label>Net Proceeds</label>
+                                    <span id="trad-proceeds">$0</span>
+                                </div>
+                                <div class="metric">
+                                    <label>Time to Close</label>
+                                    <span>30-45 days</span>
+                                </div>
+                                <div class="metric">
+                                    <label>Closing Costs</label>
+                                    <span id="trad-costs">$0</span>
+                                </div>
+                            </div>
+                            
+                            <div class="sale-option">
+                                <h4>Seller Financing</h4>
+                                <div class="metric">
+                                    <label>Monthly Income</label>
+                                    <span id="monthly-income">$0</span>
+                                </div>
+                                <div class="metric">
+                                    <label>Total Return</label>
+                                    <span id="total-return">$0</span>
+                                </div>
+                                <div class="metric">
+                                    <label>Tax Benefits</label>
+                                    <span id="tax-benefits">$0</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="risk-analysis">
+                        <h3>Risk Assessment</h3>
+                        <div class="risk-grid">
+                            <div class="risk-meter"></div>
+                            <div class="risk-factors"></div>
+                        </div>
+                    </div>
+
+                    <div class="charts-container">
+                        <div class="chart-wrapper">
+                            <canvas id="cash-flow-chart"></canvas>
+                        </div>
+                        <div class="chart-wrapper">
+                            <canvas id="equity-position-chart"></canvas>
+                        </div>
+                        <div class="chart-wrapper">
+                            <canvas id="tax-benefit-chart"></canvas>
+                        </div>
+                    </div>
+
+                    <div class="document-section">
+                        <h3>Generate Documents</h3>
+                        <div class="document-buttons">
+                            <button id="generate-note">Promissory Note</button>
+                            <button id="generate-deed">Deed of Trust</button>
+                            <button id="generate-disclosures">Disclosures</button>
+                            <button id="generate-amortization">Amortization Schedule</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="deal-analyzer" class="tab-content calculator-container">
+            <div class="calculator-info">
+                <div class="info-header">
+                    <h3>Deal Analysis Tool</h3>
+                    <button class="toggle-info" title="Show/Hide Help">ⓘ</button>
+                </div>
+                
+                <!-- Overview Metrics -->
+                <div class="overview-metrics">
+                    <div class="metric">
+                        <span class="metric-value" id="deal-profit">$0</span>
+                        <span class="metric-label">Potential Profit</span>
+                    </div>
+                    <div class="metric">
+                        <span class="metric-value" id="deal-roi">0%</span>
+                        <span class="metric-label">Expected ROI</span>
+                    </div>
+                    <div class="metric">
+                        <span class="metric-value" id="deal-timeline">0</span>
+                        <span class="metric-label">Days to Close</span>
+                    </div>
+                </div>
+
+                <!-- Main Analysis Form -->
+                <div class="analysis-form">
+                    <!-- Property Details -->
+                    <div class="input-section">
+                        <h3>Property Details</h3>
+                        <div class="input-grid">
+                            <div class="input-group">
+                                <label>Purchase Price</label>
+                                <input type="number" id="asking-price" placeholder="$">
+                                <span class="help-text">Current asking or contract price</span>
+                            </div>
+                            <!-- Add other property inputs -->
+                        </div>
+                    </div>
+
+                    <!-- Financing Options -->
+                    <div class="input-section">
+                        <h3>Financing Strategies</h3>
+                        <div class="strategy-filters">
+                            <button class="strategy-type active" data-type="all">All Options</button>
+                            <button class="strategy-type" data-type="creative">Creative</button>
+                            <button class="strategy-type" data-type="traditional">Traditional</button>
+                        </div>
+                        <div class="strategies-container">
+                            <!-- Strategy cards here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="rental-analysis" class="tab-content">
+            <h2>Rental Property Analysis</h2>
+            <div class="rental-analysis-container">
+                <div class="input-sections">
+                    <div class="input-section">
+                        <h3>Income</h3>
+                        <input type="number" id="monthly-rent" placeholder="Monthly Rent">
+                        <input type="number" id="other-income" placeholder="Other Monthly Income">
+                        <input type="number" id="vacancy-rate" placeholder="Vacancy Rate %" value="5">
+                    </div>
+
+                    <div class="input-section">
+                        <h3>Expenses</h3>
+                        <input type="number" id="property-tax-monthly" placeholder="Monthly Property Tax">
+                        <input type="number" id="insurance-monthly" placeholder="Monthly Insurance">
+                        <input type="number" id="utilities" placeholder="Monthly Utilities">
+                        <input type="number" id="maintenance" placeholder="Monthly Maintenance">
+                        <input type="number" id="property-management" placeholder="Property Management %">
+                    </div>
+
+                    <div class="input-section">
+                        <h3>Purchase Info</h3>
+                        <input type="number" id="purchase-price" placeholder="Purchase Price">
+                        <input type="number" id="down-payment-percent" placeholder="Down Payment %" value="20">
+                        <input type="number" id="loan-rate" placeholder="Loan Interest Rate %">
+                        <input type="number" id="loan-term" placeholder="Loan Term (years)" value="30">
+                        <input type="number" id="closing-costs" placeholder="Closing Costs">
+                    </div>
+                </div>
+
+                <button id="analyze-rental" class="analyze-btn">Analyze Rental</button>
+                
+                <div id="rental-results" class="results-container">
+                    <!-- Results will be displayed here -->
+                </div>
+            </div>
+        </div>
+
+        <div id="flip-calculator" class="tab-content">
+            <h2>Fix & Flip Analysis</h2>
+            <div class="flip-calculator-container">
+                <div class="input-sections">
+                    <div class="input-section">
+                        <h3>Property Information</h3>
+                        <input type="number" id="flip-purchase-price" placeholder="Purchase Price">
+                        <input type="number" id="flip-sqft" placeholder="Square Footage">
+                        <input type="number" id="flip-beds" placeholder="Bedrooms">
+                        <input type="number" id="flip-baths" placeholder="Bathrooms">
+                        <input type="number" id="flip-lot-size" placeholder="Lot Size (sqft)">
+                        <input type="number" id="flip-year-built" placeholder="Year Built">
+                    </div>
+
+                    <div class="input-section">
+                        <h3>Renovation Details</h3>
+                        <select id="flip-kitchen-type">
+                            <option value="economy">Economy Kitchen ($5k-15k)</option>
+                            <option value="midgrade">Midgrade Kitchen ($15k-30k)</option>
+                            <option value="luxury">Luxury Kitchen ($30k-60k)</option>
+                        </select>
+                        <select id="flip-bathroom-type">
+                            <option value="basic">Basic Bath ($3k-8k)</option>
+                            <option value="full">Full Bath ($8k-15k)</option>
+                            <option value="luxury">Luxury Bath ($15k-30k)</option>
+                        </select>
+                        <select id="flip-roof-condition">
+                            <option value="good">Good - No Work</option>
+                            <option value="repair">Needs Repair</option>
+                            <option value="replace">Full Replacement</option>
+                        </select>
+                        <select id="flip-hvac-condition">
+                            <option value="good">Working</option>
+                            <option value="repair">Needs Repair</option>
+                            <option value="replace">Needs Replacement</option>
+                        </select>
+                    </div>
+
+                    <div class="input-section">
+                        <h3>Additional Renovations</h3>
+                        <div class="checkbox-group">
+                            <label>
+                                <input type="checkbox" id="flip-paint-interior">
+                                Interior Paint
+                            </label>
+                            <label>
+                                <input type="checkbox" id="flip-paint-exterior">
+                                Exterior Paint
+                            </label>
+                            <label>
+                                <input type="checkbox" id="flip-flooring">
+                                New Flooring
+                            </label>
+                            <label>
+                                <input type="checkbox" id="flip-windows">
+                                Window Replacement
+                            </label>
+                            <label>
+                                <input type="checkbox" id="flip-landscaping">
+                                Landscaping
+                            </label>
+                        </div>
+                        <select id="flip-flooring-type">
+                            <option value="carpet">Carpet ($2.50/sqft)</option>
+                            <option value="lvp">LVP ($4.50/sqft)</option>
+                            <option value="hardwood">Hardwood ($8.00/sqft)</option>
+                            <option value="tile">Tile ($6.00/sqft)</option>
+                        </select>
+                    </div>
+
+                    <div class="input-section">
+                        <h3>Market Analysis</h3>
+                        <input type="number" id="flip-arv" placeholder="After Repair Value (ARV)">
+                        <input type="number" id="flip-comp1" placeholder="Comp 1 Price">
+                        <input type="number" id="flip-comp2" placeholder="Comp 2 Price">
+                        <input type="number" id="flip-comp3" placeholder="Comp 3 Price">
+                        <input type="number" id="flip-days-on-market" placeholder="Avg Days on Market">
+                        <select id="flip-market-condition">
+                            <option value="hot">Hot Market</option>
+                            <option value="neutral">Neutral Market</option>
+                            <option value="cold">Cold Market</option>
+                        </select>
+                    </div>
+
+                    <div class="input-section">
+                        <h3>Financing</h3>
+                        <input type="number" id="flip-down-payment" placeholder="Down Payment %">
+                        <input type="number" id="flip-interest-rate" placeholder="Interest Rate %">
+                        <input type="number" id="flip-loan-term" placeholder="Loan Term (months)">
+                        <input type="number" id="flip-points" placeholder="Loan Points">
+                        <input type="number" id="flip-closing-costs" placeholder="Closing Costs">
+                    </div>
+
+                    <div class="input-section">
+                        <h3>Timeline & Holding Costs</h3>
+                        <input type="number" id="flip-rehab-time" placeholder="Renovation Time (months)">
+                        <input type="number" id="flip-marketing-time" placeholder="Marketing Time (months)">
+                        <input type="number" id="flip-utilities" placeholder="Monthly Utilities">
+                        <input type="number" id="flip-insurance" placeholder="Monthly Insurance">
+                        <input type="number" id="flip-taxes" placeholder="Monthly Property Tax">
+                    </div>
+                </div>
+
+                <button id="analyze-flip" class="analyze-btn">Analyze Flip</button>
+
+                <div class="results-container">
+                    <div id="flip-summary" class="summary-section">
+                        <!-- Summary will be displayed here -->
+                    </div>
+                    
+                    <div class="charts-container">
+                        <div class="chart-wrapper">
+                            <canvas id="renovation-breakdown-chart"></canvas>
+                        </div>
+                        <div class="chart-wrapper">
+                            <canvas id="profit-analysis-chart"></canvas>
+                        </div>
+                        <div class="chart-wrapper">
+                            <canvas id="timeline-chart"></canvas>
+                        </div>
+                    </div>
+
+                    <div id="flip-details" class="details-section">
+                        <!-- Detailed analysis will be shown here -->
+                    </div>
+
+                    <div id="market-analysis" class="market-section">
+                        <!-- Market analysis will be shown here -->
+                    </div>
+
+                    <div id="risk-analysis" class="risk-section">
+                        <!-- Risk analysis will be shown here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="wholesale" class="tab-content">
+            <h2>Wholesale Deal Calculator</h2>
+            <div class="calculator-info">
+                <div class="info-header">
+                    <h3>About Wholesale Analysis</h3>
+                    <button class="toggle-info" title="Show/Hide Help">ⓘ</button>
+                </div>
+                <div class="info-content">
+                    <!-- Add info content -->
+                </div>
+            </div>
+            
+            <div class="wholesale-calculator-container">
+                <!-- Property Information -->
+                <div class="input-section">
+                    <h3>Property Information</h3>
+                    <div class="input-grid">
+                        <div class="input-group">
+                            <label>Property Address</label>
+                            <input type="text" id="wholesale-address" placeholder="Property Address">
+                        </div>
+                        <div class="input-group">
+                            <label>Asking Price</label>
+                            <input type="number" id="wholesale-asking-price" placeholder="$">
+                        </div>
+                        <div class="input-group">
+                            <label>Estimated ARV</label>
+                            <input type="number" id="wholesale-arv" placeholder="$">
+                        </div>
+                        <div class="input-group">
+                            <label>Repair Estimate</label>
+                            <input type="number" id="wholesale-repairs" placeholder="$">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Market Analysis -->
+                <div class="input-section">
+                    <h3>Market Analysis</h3>
+                    <div class="input-grid">
+                        <div class="input-group">
+                            <label>Comparable Sale 1</label>
+                            <input type="number" id="wholesale-comp1" placeholder="$">
+                        </div>
+                        <div class="input-group">
+                            <label>Comparable Sale 2</label>
+                            <input type="number" id="wholesale-comp2" placeholder="$">
+                        </div>
+                        <div class="input-group">
+                            <label>Comparable Sale 3</label>
+                            <input type="number" id="wholesale-comp3" placeholder="$">
+                        </div>
+                        <div class="input-group">
+                            <label>Average Days on Market</label>
+                            <input type="number" id="wholesale-dom" placeholder="Days">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Buyer Analysis -->
+                <div class="input-section">
+                    <h3>Buyer Analysis</h3>
+                    <div class="input-grid">
+                        <div class="input-group">
+                            <label>Typical Buyer Requirements</label>
+                            <select id="wholesale-buyer-type">
+                                <option value="flipper">Fix & Flip</option>
+                                <option value="landlord">Buy & Hold</option>
+                                <option value="owner">Owner Occupant</option>
+                            </select>
+                        </div>
+                        <div class="input-group">
+                            <label>Buyer's Desired ROI</label>
+                            <input type="number" id="wholesale-buyer-roi" placeholder="%" value="20">
+                        </div>
+                        <div class="input-group">
+                            <label>Maximum Allowable Offer</label>
+                            <input type="number" id="wholesale-mao" placeholder="$">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Deal Analysis -->
+                <div class="input-section">
+                    <h3>Deal Structure</h3>
+                    <div class="input-grid">
+                        <div class="input-group">
+                            <label>Purchase Price</label>
+                            <input type="number" id="wholesale-purchase-price" placeholder="$">
+                        </div>
+                        <div class="input-group">
+                            <label>Assignment Fee</label>
+                            <input type="number" id="wholesale-assignment-fee" placeholder="$">
+                        </div>
+                        <div class="input-group">
+                            <label>Earnest Money</label>
+                            <input type="number" id="wholesale-earnest-money" placeholder="$">
+                        </div>
+                        <div class="input-group">
+                            <label>Closing Costs</label>
+                            <input type="number" id="wholesale-closing-costs" placeholder="$">
+                        </div>
+                    </div>
+                </div>
+
+                <button id="analyze-wholesale" class="analyze-btn">Analyze Wholesale Deal</button>
+
+                <!-- Results Section -->
+                <div class="results-container">
+                    <div class="summary-section">
+                        <h3>Deal Summary</h3>
+                        <div class="metrics-grid">
+                            <div class="metric">
+                                <label>Potential Profit</label>
+                                <span id="wholesale-profit">$0</span>
+                            </div>
+                            <div class="metric">
+                                <label>ROI</label>
+                                <span id="wholesale-roi">0%</span>
+                            </div>
+                            <div class="metric">
+                                <label>Max Allowable Offer</label>
+                                <span id="wholesale-max-offer">$0</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Charts -->
+                    <div class="charts-container">
+                        <div class="chart-wrapper">
+                            <canvas id="wholesale-deal-breakdown"></canvas>
+                        </div>
+                        <div class="chart-wrapper">
+                            <canvas id="wholesale-comps-analysis"></canvas>
+                        </div>
+                        <div class="chart-wrapper">
+                            <canvas id="wholesale-profit-scenarios"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- Recommendations -->
+                    <div class="recommendations-section">
+                        <h3>Deal Recommendations</h3>
+                        <div id="wholesale-recommendations"></div>
+                    </div>
+
+                    <!-- Marketing Plan -->
+                    <div class="marketing-section">
+                        <h3>Buyer Marketing Strategy</h3>
+                        <div id="wholesale-marketing-plan"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="marketing" class="tab-content">
+            <h2>Marketing ROI Tracker</h2>
+            <div class="marketing-calculator-container">
+                <div class="campaigns-section">
+                    <div class="controls">
+                        <button id="add-campaign" class="action-btn">Add Campaign</button>
+                        <button id="analyze-marketing" class="analyze-btn">Analyze All Campaigns</button>
+                    </div>
+                    
+                    <div id="campaigns-list">
+                        <!-- Campaign rows will be added here -->
+                    </div>
+                </div>
+                
+                <div id="marketing-results" class="results-container">
+                    <!-- Results will be displayed here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/base_calculator.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/seller_finance.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/deal_analyzer.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/rental_calculator.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/flip_calculator.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/wholesale_calculator.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/marketing_tracker.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/tab_manager.js') }}"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            new TabManager();
+        });
+    </script>
+</body>
+</html> 

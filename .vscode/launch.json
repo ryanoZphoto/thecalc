@@ -1,0 +1,17 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        
+        {
+            "name": "Debug Calculator Test",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}/calculator/src/calculator/debug_test.py",
+            "console": "integratedTerminal",
+            "justMyCode": false,
+            "env": {
+                "PYTHONPATH": "${workspaceFolder}/calculator/src"
+            }
+        }
+    ]
+} 

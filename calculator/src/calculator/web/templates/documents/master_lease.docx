@@ -1,0 +1,5 @@
+# Create a Word template with placeholders like:
+# {{property_address}}
+# {{lease_payment}}
+# {{term}}
+# etc. 
