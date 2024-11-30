@@ -1,5 +1,9 @@
-# Create a Word template with placeholders like:
-# {{property_address}}
-# {{lease_payment}}
-# {{term}}
-# etc. 
+MASTER LEASE AGREEMENT
+
+Property Address: {{property_address}}
+Monthly Payment: {{lease_payment}}
+Term: {{term}}
+Start Date: {{start_date}}
+End Date: {{end_date}}
+
+[Rest of your lease template...] 
